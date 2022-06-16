@@ -1,0 +1,124 @@
+---
+title: "wine_report.Rmd"
+output: html_document
+knit: (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_dir = "../"
+    )
+  })
+---
+
+install.packages("here")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+i_am("individual-assignment-2-dinaa-kh.Rproj")
+read.csv("Data/winequality-red.csv")
+
+```
+#DATA
+```{r, include=FALSE}
+#Used libaries
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+library(tidyr)
+library(here)
+library(readr)
+library(corrplot)
+
+wineq <- read_csv ("~/Documents/misk-DSI/individual-assignment-2-dinaa-kh/Data/winequality-red.csv")
+
+wineqc <- wineq %>%
+  clean_names()
+
+names(wineqc)[9] <- "ph"
+```
+This dataset is affiliated with red and white variants of the Portuguese "Vinho Verde" wine provided by UCIML.
+variables provided from the dataset can be shown in this table:
+
+| Variable             Description                                            
+| ------------------------------------------------------------------------ 
+Fixed acidity          acids involved with wine fixed or nonvolatile  
+Volatile acidity      amount of acetic acid in wine, which at high levels can lead to an unpleasant taste               
+Citric acid           citric acid  adds  freshness and flavor. 
+Residual sugar        the amount of sugar left after fermentation
+Chlorides             amount of salt in wine                         
+Free sulfur dioxide   the free form of SO2                                   
+Total sulfur dioxide  the amount of free and bound forms of S02                  
+Density               depends on the percent of alcohol and sugar     
+pH                    shows how acidic or basic a wine is                
+Sulphate              additive contributes to S02 & acts as an antimicrobial 
+Alcohol               percentage of alcohol by volume                        
+Quality               a score between 0 and 10                               
+
+#EDA
+```{r}
+#We took a look into our data using
+str(wineqc)
+summary(wineqc)
+length(wineqc)
+dim(wineqc)
+names(wineqc)
+summary(wineqc$quality)
+table(wineqc$quality) 
+
+
+```
+
+```{r}
+#For quality distirbution
+ggplot(wineqc,aes(x=quality))+geom_bar(stat = "count",position = "dodge", fill = "light pink")+
+  scale_x_continuous(breaks = seq(3,8,1))+
+  ggtitle("Wine Quality Ratings distributed")+
+  theme_classic()
+```
+we can see that majority of the quality is around 5-6. Around 82%
+
+```{r}
+#for the coralation
+wine = cor(wineqc)
+corrplot(wine)
+#As the plot offers, alcohol has the most robust correlation with wine quality.
+```
+We checked how 11 features impacted the quality of wine using ggplot and boxplot
+
+```{r}
+#alcohol
+ggplot(wineqc, aes(x = factor(quality), y =alcohol, fill = quality)) + 
+  stat_boxplot(geom = "errorbar", width = 0.25) + 
+  geom_boxplot() +
+  guides(fill = guide_legend(title = "Quality"))+ xlab("quality")
+```
+
+```{r}
+ggplot(wineqc, aes(quality, sulphates)) +
+  geom_jitter(width = 0.55, alpha = 0.5, colour = "yellow") +
+  geom_smooth(method=lm, se=FALSE, colour = "orange")
+```
+we can see how sulphate affects the quality
+
+```{r}
+wineqc%>%
+  ggplot(aes(factor(quality), `fixed_acidity`, group=quality))+geom_boxplot()+ggtitle("Fixed Acidity/quality")+theme_classic()
+#how fixed acidity has an affect on quality
+
+```
+how fixed acidity has an affect on quality
+
+
+```{r}
+ggplot(wineqc, aes(quality, citric_acid)) +
+  geom_jitter(width = 0.55, alpha = 0.5, colour = "yellow") +
+  geom_smooth(method=lm, se=FALSE, colour = "orange")
+#the affect citric acid has on the quality.
+```
+the affect citric acid has on the quality.
+
+
+
+
+## Conclusion
+In conclusion wine quality is effected by 4 fetures : alcohol/sulphate/fixed acidity/citric acid
