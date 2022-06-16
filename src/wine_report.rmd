@@ -15,7 +15,7 @@ install.packages("here")
 knitr::opts_chunk$set(echo = TRUE)
 library(here)
 i_am("individual-assignment-2-dinaa-kh.Rproj")
-read.csv("Data/winequality-red.csv")
+read.csv("~/Documents/misk-DSI/individual-assignment-2-dinaa-kh/Data/winequality-red.csv")
 
 ```
 #DATA
